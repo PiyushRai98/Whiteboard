@@ -1,0 +1,24 @@
+{
+  "name": "whiteboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production-oriented monorepo foundation for a real-time 3D collaborative whiteboard.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @whiteboard/shared && npm run build -w @whiteboard/api && npm run build -w @whiteboard/web",
+    "lint": "npm run lint -w @whiteboard/web && npm run lint -w @whiteboard/api && npm run lint -w @whiteboard/shared",
+    "test": "npm run test -w @whiteboard/shared && npm run test -w @whiteboard/api",
+    "typecheck": "npm run typecheck -w @whiteboard/shared && npm run typecheck -w @whiteboard/api && npm run typecheck -w @whiteboard/web"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiyushRai98/Whiteboard.git"
+  },
+  "license": "MIT"
+}

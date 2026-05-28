@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String      @id @default(cuid())
+  email     String?     @unique
+  name      String
+  avatarUrl String?
+  role      RoomRole    @default(VIEWER)
+  rooms     RoomMember[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Workspace {
+  id        String    @id @default(cuid())
+  name      String
+  rooms     Room[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Room {
+  id          String         @id @default(cuid())
+  workspaceId String
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name        String
+  slug        String         @unique
+  members     RoomMember[]
+  snapshots   BoardSnapshot[]
+  assets      Asset[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model RoomMember {
+  id        String   @id @default(cuid())
+  userId    String
+  roomId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  role      RoomRole @default(EDITOR)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roomId])
+}
+
+model BoardSnapshot {
+  id         String   @id @default(cuid())
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  versionName String
+  payload     Json
+  createdAt   DateTime @default(now())
+}
+
+model Asset {
+  id          String   @id @default(cuid())
+  roomId       String
+  room         Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  key          String   @unique
+  contentType  String
+  kind         String
+  thumbnailKey String?
+  createdAt    DateTime @default(now())
+}
+
+enum RoomRole {
+  OWNER
+  EDITOR
+  VIEWER
+  PRESENTER
+}
